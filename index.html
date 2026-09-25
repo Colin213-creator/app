@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>校园社团助手 · 官网</title>
+<meta name="description" content="校园社团助手是一款 HarmonyOS 应用：浏览社团、一键加入、活动报名、消息提醒，还能自己发起社团。数据仅保存在本机。">
+<link rel="icon" href="favicon.png">
+<style>
+  :root{
+    --p1:#6E5AE8; --p2:#3E3CBF; --ink:#1A1B25; --sub:#5A6072; --light:#8A90A2;
+    --line:#E9EAF2; --bg:#F7F8FC; --card:#FFFFFF; --radius:18px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink); line-height:1.75;
+    font-family:-apple-system,BlinkMacSystemFont,"HarmonyOS Sans","PingFang SC","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+
+  /* 顶部导航 */
+  .nav{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .nav-inner{display:flex;align-items:center;gap:12px;height:64px}
+  .nav-logo{width:34px;height:34px;border-radius:10px;display:block}
+  .brand{font-weight:700;font-size:17px;letter-spacing:.2px}
+  .nav-links{margin-left:auto;display:flex;gap:22px;font-size:14px;color:var(--sub)}
+  .nav-links a:hover{color:var(--p1)}
+  @media(max-width:640px){ .nav-links{gap:14px;font-size:13px} .nav-links a.hide-sm{display:none} }
+
+  /* 首屏 */
+  .hero{background:linear-gradient(140deg,var(--p1),var(--p2));color:#fff;padding:64px 0 72px}
+  .hero-inner{display:flex;align-items:center;gap:48px}
+  .hero-text{flex:1;min-width:0}
+  .badge{display:inline-block;font-size:13px;padding:5px 12px;border-radius:999px;background:rgba(255,255,255,.18);margin-bottom:18px}
+  .hero h1{font-size:42px;line-height:1.2;margin:0 0 14px;letter-spacing:.5px}
+  .hero .sub{font-size:16px;color:rgba(255,255,255,.9);margin:0 0 26px;max-width:540px}
+  .btns{display:flex;gap:12px;flex-wrap:wrap}
+  .btn{display:inline-block;padding:12px 26px;border-radius:999px;font-size:15px;font-weight:600;transition:.2s}
+  .btn.primary{background:#fff;color:var(--p2)}
+  .btn.primary:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.18)}
+  .btn.ghost{border:1px solid rgba(255,255,255,.6);color:#fff}
+  .btn.ghost:hover{background:rgba(255,255,255,.14)}
+  .hero .meta{margin:22px 0 0;font-size:13px;color:rgba(255,255,255,.75)}
+  .hero-icon img{width:190px;height:190px;border-radius:42px;box-shadow:0 24px 50px rgba(20,16,80,.35);display:block}
+  @media(max-width:820px){
+    .hero-inner{flex-direction:column-reverse;gap:28px;text-align:center}
+    .hero .sub{margin-left:auto;margin-right:auto}
+    .btns{justify-content:center}
+    .hero h1{font-size:32px}
+    .hero-icon img{width:132px;height:132px;border-radius:30px}
+  }
+
+  /* 区块 */
+  .sec{padding:64px 0}
+  .sec.alt{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  h2{font-size:26px;margin:0 0 8px;letter-spacing:.3px}
+  .lead{color:var(--sub);margin:0 0 34px;max-width:640px}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:600px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;transition:.2s}
+  .card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(30,25,90,.08)}
+  .card .ico{font-size:24px}
+  .card h3{font-size:16px;margin:12px 0 6px}
+  .card p{font-size:14px;color:var(--sub);margin:0}
+
+  /* 界面示意 */
+  .preview{display:flex;align-items:center;gap:56px}
+  .preview-text{flex:1}
+  .ticks{list-style:none;padding:0;margin:18px 0 0;font-size:14.5px;color:var(--sub)}
+  .ticks li{padding-left:24px;position:relative;margin-bottom:10px}
+  .ticks li::before{content:"✓";position:absolute;left:0;color:var(--p1);font-weight:700}
+  .phone{width:290px;flex:none;background:#0E0F1A;border-radius:38px;padding:10px;box-shadow:0 28px 60px rgba(20,16,80,.28)}
+  .screen{background:var(--bg);border-radius:30px;overflow:hidden;height:520px;display:flex;flex-direction:column}
+  .ph-head{background:linear-gradient(150deg,var(--p1),var(--p2));padding:18px 16px 30px;color:#fff}
+  .ph-row1{display:flex;align-items:center;gap:10px}
+  .ph-ava{width:34px;height:34px;border-radius:17px;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:17px}
+  .ph-head b{font-size:14px;display:block}
+  .ph-head small{font-size:10.5px;color:rgba(255,255,255,.75)}
+  .ph-bell{margin-left:auto;width:32px;height:32px;border-radius:16px;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:15px}
+  .ph-search{margin:12px 0 0;height:34px;border-radius:17px;background:rgba(255,255,255,.25);color:rgba(255,255,255,.85);font-size:11.5px;display:flex;align-items:center;padding:0 12px}
+  .ph-body{padding:10px 12px;margin-top:-22px}
+  .ph-banner{border-radius:14px;padding:12px;color:#fff;background:linear-gradient(120deg,#5B5BD6,#8B7CF6)}
+  .ph-banner b{font-size:13px;display:block;line-height:1.4}
+  .ph-banner small{font-size:10.5px;color:rgba(255,255,255,.85)}
+  .ph-card{background:#fff;border-radius:14px;padding:10px;margin-top:10px;display:flex;align-items:center;gap:10px}
+  .ph-tile{width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;background:#EEEDFB;flex:none}
+  .ph-card b{font-size:12.5px;display:block}
+  .ph-card small{font-size:10.5px;color:var(--light)}
+  .ph-join{margin-left:auto;font-size:10.5px;color:#fff;background:var(--p1);border-radius:999px;padding:4px 10px}
+  .ph-tabs{margin-top:auto;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 0;font-size:10px;color:var(--light)}
+  .ph-tabs .on{color:var(--p1);font-weight:600}
+  @media(max-width:820px){
+    .preview{flex-direction:column;gap:32px}
+    .phone{width:260px}
+    .screen{height:480px}
+  }
+
+  /* 应用信息 */
+  .info{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .info-row{display:flex;padding:15px 22px;border-bottom:1px solid var(--line);font-size:14.5px}
+  .info-row:last-child{border-bottom:none}
+  .info-row dt{width:130px;color:var(--light);flex:none;margin:0}
+  .info-row dd{margin:0;color:var(--ink);word-break:break-all}
+  @media(max-width:600px){ .info-row{flex-direction:column;gap:2px} .info-row dt{width:auto} }
+
+  footer{background:#14152B;color:#B9BDD4;padding:36px 0;font-size:13.5px}
+  footer a{color:#D8DAE8}
+  footer a:hover{color:#fff}
+  .foot-links{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:10px}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <img class="nav-logo" src="icon.png" alt="校园社团助手">
+    <span class="brand">校园社团助手</span>
+    <nav class="nav-links">
+      <a href="#features">功能</a>
+      <a href="#preview" class="hide-sm">界面</a>
+      <a href="#info">应用信息</a>
+      <a href="privacy.html">隐私政策</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-inner">
+    <div class="hero-text">
+      <span class="badge">HarmonyOS 应用 · 即将上架华为应用市场</span>
+      <h1>校园社团助手</h1>
+      <p class="sub">把校园里的社团和活动装进一个应用：浏览社团、一键加入、活动报名、消息提醒，还能自己发起社团。</p>
+      <div class="btns">
+        <a class="btn primary" href="#features">查看功能</a>
+        <a class="btn ghost" href="privacy.html">隐私政策</a>
+      </div>
+      <p class="meta">版本 1.0.0 · 支持 HarmonyOS 手机与平板 · 数据仅保存在本机，不联网、不采集个人信息</p>
+    </div>
+    <div class="hero-icon">
+      <img src="icon.png" alt="校园社团助手 应用图标">
+    </div>
+  </div>
+</section>
+
+<section id="features" class="sec">
+  <div class="wrap">
+    <h2>功能特点</h2>
+    <p class="lead">面向在校学生的一站式社团与活动工具，界面按手机屏幕设计，打开即用。</p>
+    <div class="grid">
+      <div class="card">
+        <div class="ico">🎪</div>
+        <h3>社团浏览与加入</h3>
+        <p>按学术科技、文化艺术、体育运动、志愿公益等分类筛选，查看社团简介、成员规模与指导教师，一键加入或退出。</p>
+      </div>
+      <div class="card">
+        <div class="ico">📝</div>
+        <h3>活动报名</h3>
+        <p>活动列表显示报名进度与剩余名额，填写姓名、学号与联系方式即可报名，名额已满或已结束会明确提示。</p>
+      </div>
+      <div class="card">
+        <div class="ico">🔔</div>
+        <h3>消息提醒</h3>
+        <p>入社成功、报名成功、招新与活动开始提醒都会进入消息中心，点开直接跳到对应社团或活动，支持一键全部已读。</p>
+      </div>
+      <div class="card">
+        <div class="ico">👥</div>
+        <h3>我的社团与收藏</h3>
+        <p>「我的」页面集中管理已加入的社团、已报名的活动和收藏的活动，随时取消报名或退出社团。</p>
+      </div>
+      <div class="card">
+        <div class="ico">📣</div>
+        <h3>发起社团</h3>
+        <p>填写名称、分类、标语、介绍与招募人数即可提交社团成立申请，提交后进入审核状态并出现在社团列表中。</p>
+      </div>
+      <div class="card">
+        <div class="ico">🔒</div>
+        <h3>数据只在本机</h3>
+        <p>应用不申请任何系统权限、不发起网络请求、不集成第三方 SDK，加入的社团和报名记录仅保存在你的设备上。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="preview" class="sec alt">
+  <div class="wrap preview">
+    <div class="preview-text">
+      <h2>界面一览</h2>
+      <p class="lead">首页集中展示招新社团与近期活动，底部四个入口对应四个主要页面。</p>
+      <ul class="ticks">
+        <li>首页：问候语、搜索、热门活动轮播、快捷入口</li>
+        <li>社团：分类筛选、关键词搜索、加入社团</li>
+        <li>活动：按报名中 / 即将开始 / 已结束筛选</li>
+        <li>我的：我的社团、我的活动、我的收藏、应用设置</li>
+      </ul>
+    </div>
+    <div class="phone" aria-hidden="true">
+      <div class="screen">
+        <div class="ph-head">
+          <div class="ph-row1">
+            <span class="ph-ava">🧑‍🎓</span>
+            <div><b>你好，李思远</b><small>计算机科学与技术学院</small></div>
+            <span class="ph-bell">🔔</span>
+          </div>
+          <div class="ph-search">🔍 搜索社团、活动、关键词</div>
+        </div>
+        <div class="ph-body">
+          <div class="ph-banner">
+            <b>HarmonyOS 应用开发工作坊</b>
+            <small>极客编程社 · 10-12 14:00 · 已报名 48/60</small>
+          </div>
+          <div class="ph-card">
+            <span class="ph-tile">💻</span>
+            <div><b>极客编程社</b><small>用代码改变校园生活 · 186 人</small></div>
+            <span class="ph-join">加入</span>
+          </div>
+          <div class="ph-card">
+            <span class="ph-tile">🕺</span>
+            <div><b>街舞联盟</b><small>青春要有自己的节奏 · 268 人</small></div>
+            <span class="ph-join">加入</span>
+          </div>
+        </div>
+        <div class="ph-tabs">
+          <span class="on">🏠 首页</span><span>🎪 社团</span><span>📅 活动</span><span>👤 我的</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="info" class="sec">
+  <div class="wrap">
+    <h2>应用信息</h2>
+    <p class="lead">以下信息与应用安装包内的信息一致，便于核对。</p>
+    <dl class="info">
+      <div class="info-row"><dt>应用名称</dt><dd>校园社团助手</dd></div>
+      <div class="info-row"><dt>版本</dt><dd>1.0.0（versionCode 1000000）</dd></div>
+      <div class="info-row"><dt>应用包名</dt><dd>com.shanda.campusclub</dd></div>
+      <div class="info-row"><dt>适用平台</dt><dd>HarmonyOS（手机 / 平板）</dd></div>
+      <div class="info-row"><dt>开发者</dt><dd>姚宏亮</dd></div>
+      <div class="info-row"><dt>权限说明</dt><dd>不申请任何系统权限</dd></div>
+      <div class="info-row"><dt>联网说明</dt><dd>不联网，不上传任何数据，无第三方 SDK</dd></div>
+      <div class="info-row"><dt>数据存储</dt><dd>社团、活动与报名记录仅保存在本机，卸载应用即删除</dd></div>
+      <div class="info-row"><dt>联系邮箱</dt><dd><!-- 上线前把下面这行替换成你自己的邮箱 -->campusclub@example.com</dd></div>
+    </dl>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-links">
+      <a href="index.html">首页</a>
+      <a href="#features">功能特点</a>
+      <a href="privacy.html">隐私政策</a>
+    </div>
+    <div>© 2026 校园社团助手 · 开发者：姚宏亮 · 联系邮箱：campusclub@example.com</div>
+    <div style="margin-top:6px;color:#8A8FAA">本页面为应用官方网站，应用不收集任何个人信息。</div>
+  </div>
+</footer>
+
+</body>
+</html>
